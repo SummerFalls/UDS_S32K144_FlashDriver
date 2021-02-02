@@ -996,12 +996,6 @@ Resulting sub-function parameter byte value (bit 7 ~ 0)
 
 正响应抑制位是在 Sub-Function 里的这个字节的最高位，我们把它叫做正响应抑制位。只有这个服务支持 Sub-Function 的时候，才有可能支持正响应抑制位。这里要注意的是它只是抑制正响应，而负响应是不被抑制的。
 
-<br/>
-
----
-
-<br/>
-
 [Pic_ZCANPRO_ECU_Refresh]: ./Pic_ZCANPRO_ECU_Refresh.png
-[UDS_OSI_Model]: ./UDS_OSI.png
-[UDS_PCI_Frame]: ./UDS_PCI_Frame.png
+[UDS_OSI_Model]: ./Pic_UDS_OSI.png
+[UDS_PCI_Frame]: ./Pic_UDS_PCI_Frame.png
