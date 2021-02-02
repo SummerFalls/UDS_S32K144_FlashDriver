@@ -1,0 +1,66 @@
+<CodeGenerationInfo>
+  <ToolchainSettings>
+    <option>
+      <name>PE_G_4PEx_ToolChain_C_Compiler_Includes</name>
+      <values lines_count="6">
+        <Line>"${ProjDirPath}/SDK/platform/drivers/src/clock/S32K1xx"</Line>
+        <Line>"${ProjDirPath}/SDK/platform/devices"</Line>
+        <Line>"${ProjDirPath}/SDK/platform/devices/common"</Line>
+        <Line>"${ProjDirPath}/SDK/platform/devices/S32K144/include"</Line>
+        <Line>"${ProjDirPath}/SDK/platform/devices/S32K144/startup"</Line>
+        <Line>"${ProjDirPath}/SDK/platform/drivers/inc"</Line>
+      </values>
+    </option>
+    <option>
+      <name>PE_G_4PEx_ilg_gnuarmeclipse_managedbuild_cross_option_c_compiler_defs</name>
+      <values lines_count="1">
+        <Line>"CPU_S32K144_100"</Line>
+      </values>
+    </option>
+  </ToolchainSettings>
+  <GeneratedFilesList>
+    <GeneratedByPE>
+      <File Name="SDK/platform/drivers/inc/flash_driver.h" FileDate="2021-02-02, 13:44:32" FileAge="1612244672240" FileType="1048576" CompNumb="5" />
+      <File Name="SDK/platform/drivers/src/clock/S32K1xx/pmc_hw_access.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642449" FileType="1048576" CompNumb="3" />
+      <File Name="Generated_Code/clockMan1.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642503" FileType="45637" CompNumb="3" />
+      <File Name="SDK/platform/drivers/inc/pins_driver.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642423" FileType="1048576" CompNumb="2" />
+      <File Name="SDK/platform/drivers/src/pins/pins_gpio_hw_access.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642419" FileType="1048576" CompNumb="2" />
+      <File Name="Generated_Code/clockMan1.c" FileDate="2021-01-25, 12:13:28" FileAge="1611548008412" FileType="45637" CompNumb="3" />
+      <File Name="SDK/platform/devices/common/s32_core_cm4.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642471" FileType="1048576" CompNumb="1" />
+      <File Name="Generated_Code/Cpu.h" FileDate="2021-01-25, 12:13:28" FileAge="1611548008417" FileType="45637" CompNumb="1" />
+      <File Name="Generated_Code/Flash1.h" FileDate="2021-01-25, 12:13:28" FileAge="1611548008402" FileType="45637" CompNumb="5" />
+      <File Name="SDK/platform/drivers/src/pins/pins_port_hw_access.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642428" FileType="1048576" CompNumb="2" />
+      <File Name="Generated_Code/Cpu.c" FileDate="2021-01-25, 11:50:42" FileAge="1611546642494" FileType="45637" CompNumb="1" />
+      <File Name="SDK/platform/drivers/src/pins/pins_driver.c" FileDate="2021-01-25, 11:50:42" FileAge="1611546642415" FileType="1048576" CompNumb="2" />
+      <File Name="Generated_Code/Flash1.c" FileDate="2021-01-25, 12:13:28" FileAge="1611548008399" FileType="45637" CompNumb="5" />
+      <File Name="SDK/platform/drivers/inc/clock.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642457" FileType="1048576" CompNumb="3" />
+      <File Name="SDK/platform/drivers/src/pins/pins_port_hw_access.c" FileDate="2021-01-25, 11:50:42" FileAge="1611546642425" FileType="1048576" CompNumb="2" />
+      <File Name="SDK/platform/drivers/src/clock/S32K1xx/scg_hw_access.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642451" FileType="1048576" CompNumb="3" />
+      <File Name="SDK/platform/devices/callbacks.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642468" FileType="1048576" CompNumb="1" />
+      <File Name="SDK/platform/devices/status.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642464" FileType="1048576" CompNumb="1" />
+      <File Name="Sources/main.c" FileDate="2021-01-25, 11:49:33" FileAge="1611546573342" FileType="128" />
+      <File Name="Documentation/UDS_S32K144_FlashDriver.txt" FileDate="2021-01-25, 12:13:28" FileAge="1611548008465" FileType="3072" />
+      <File Name="SDK/platform/devices/startup.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642473" FileType="1048576" CompNumb="1" />
+      <File Name="SDK/platform/devices/device_registers.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642466" FileType="1048576" CompNumb="1" />
+      <File Name="SDK/platform/drivers/inc/interrupt_manager.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642436" FileType="1048576" CompNumb="4" />
+      <File Name="Generated_Code/pin_mux.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642509" FileType="45637" CompNumb="2" />
+      <File Name="SDK/platform/drivers/src/flash/flash_driver.c" FileDate="2021-01-25, 12:13:28" FileAge="1611548008366" FileType="1048576" CompNumb="5" />
+      <File Name="SDK/platform/devices/startup.c" FileDate="2021-01-25, 11:50:42" FileAge="1611546642476" FileType="1048576" CompNumb="1" />
+      <File Name="SDK/platform/devices/devassert.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642462" FileType="1048576" CompNumb="1" />
+      <File Name="SDK/platform/devices/S32K144/include/S32K144_features.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642487" FileType="1048576" CompNumb="1" />
+      <File Name="Generated_Code/pin_mux.c" FileDate="2021-01-25, 11:50:42" FileAge="1611546642506" FileType="45637" CompNumb="2" />
+      <File Name="SDK/platform/drivers/src/clock/S32K1xx/pcc_hw_access.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642447" FileType="1048576" CompNumb="3" />
+      <File Name="SDK/platform/devices/S32K144/startup/system_S32K144.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642480" FileType="1048576" CompNumb="1" />
+      <File Name="SDK/platform/drivers/inc/clock_manager.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642459" FileType="1048576" CompNumb="3" />
+      <File Name="SDK/platform/devices/S32K144/startup/system_S32K144.c" FileDate="2021-01-25, 11:50:42" FileAge="1611546642484" FileType="1048576" CompNumb="1" />
+      <File Name="SDK/platform/drivers/src/clock/S32K1xx/smc_hw_access.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642456" FileType="1048576" CompNumb="3" />
+      <File Name="Documentation/UDS_S32K144_FlashDriver_Settings.xml" FileDate="2021-01-25, 12:13:28" FileAge="1611548008441" FileType="3072" />
+      <File Name="SDK/platform/drivers/src/clock/S32K1xx/clock_S32K1xx.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642444" FileType="1048576" CompNumb="3" />
+      <File Name="SDK/platform/drivers/src/interrupt/interrupt_manager.c" FileDate="2021-01-25, 11:50:42" FileAge="1611546642433" FileType="1048576" CompNumb="4" />
+      <File Name="SDK/platform/drivers/src/clock/S32K1xx/clock_S32K1xx.c" FileDate="2021-01-25, 11:50:42" FileAge="1611546642441" FileType="1048576" CompNumb="3" />
+      <File Name="SDK/platform/drivers/src/clock/S32K1xx/sim_hw_access.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642452" FileType="1048576" CompNumb="3" />
+      <File Name="SDK/platform/devices/S32K144/include/S32K144.h" FileDate="2021-01-25, 11:50:42" FileAge="1611546642492" FileType="1048576" CompNumb="1" />
+    </GeneratedByPE>
+  </GeneratedFilesList>
+  <CodeGenReference>3</CodeGenReference>
+</CodeGenerationInfo>
