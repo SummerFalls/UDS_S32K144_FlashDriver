@@ -48,8 +48,7 @@ typedef status_t (*tpfFLASH_DRV_VerifyBlock)(const flash_ssd_config_t *pSSDConfi
 typedef status_t (*tpfFLASH_DRV_Init)(const flash_user_config_t *const pUserConf, flash_ssd_config_t *const pSSDConfig);
 typedef void     (*tpfFLASH_DRV_GetDefaultConfig)(flash_user_config_t *const config);
 
-typedef struct
-{
+typedef struct {
 #if defined (S32K116) || defined (S32K142)
     tpfFLASH_DRV_EraseSector pfFLASH_DRV_EraseSector;           /* erase sector flash memory */
     tpfFLASH_DRV_Program pfFLASH_DRV_Program;                   /* program flash */

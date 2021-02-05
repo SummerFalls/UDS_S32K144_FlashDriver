@@ -162,16 +162,16 @@ uint8_t g_flashDriverRAM[] = {
 #if 0 /* 此表用途未知，故预编译条件注释 */
 uint32_t g_codeRAMBackup[] = {
 #if 1
-        0xB084B580, 0x6078AF00, 0x18FB230E, 0x801A2200, 0x4B144914, 0xB2DB781B, 0x42522280, 0xB2DB4313, 0xE006700B, 0x699B687B,
-        0xD0023301, 0x699B687B, 0x4B0C4798, 0xB2DB781B, 0x2B00B25B, 0x4B09DAF2, 0xB2DB781B, 0x2371001A, 0xD0034013, 0x18FB230E,
-        0x801A2201, 0x18FB230E, 0x0018881B, 0xB00446BD, 0x46C0BD80, 0x40020000
+    0xB084B580, 0x6078AF00, 0x18FB230E, 0x801A2200, 0x4B144914, 0xB2DB781B, 0x42522280, 0xB2DB4313, 0xE006700B, 0x699B687B,
+    0xD0023301, 0x699B687B, 0x4B0C4798, 0xB2DB781B, 0x2B00B25B, 0x4B09DAF2, 0xB2DB781B, 0x2371001A, 0xD0034013, 0x18FB230E,
+    0x801A2201, 0x18FB230E, 0x0018881B, 0xB00446BD, 0x46C0BD80, 0x40020000
 #else
-        0xB580, 0xB084, 0xAF00, 0x6078, 0x230E, 0x18FB, 0x2200, 0x801A, 0x4914, 0x4B14,
-        0x781B, 0xB2DB, 0x2280, 0x4252, 0x4313, 0xB2DB, 0x700B, 0xE006, 0x687B, 0x699B,
-        0x3301, 0xD002, 0x687B, 0x699B, 0x4798, 0x4B0C, 0x781B, 0xB2DB, 0xB25B, 0x2B00,
-        0xDAF2, 0x4B09, 0x781B, 0xB2DB, 0x001A, 0x2371, 0x4013, 0xD003, 0x230E, 0x18FB,
-        0x2201, 0x801A, 0x230E, 0x18FB, 0x881B, 0x0018, 0x46BD, 0xB004, 0xBD80, 0x46C0,
-        0x0000, 0x4002
+    0xB580, 0xB084, 0xAF00, 0x6078, 0x230E, 0x18FB, 0x2200, 0x801A, 0x4914, 0x4B14,
+    0x781B, 0xB2DB, 0x2280, 0x4252, 0x4313, 0xB2DB, 0x700B, 0xE006, 0x687B, 0x699B,
+    0x3301, 0xD002, 0x687B, 0x699B, 0x4798, 0x4B0C, 0x781B, 0xB2DB, 0xB25B, 0x2B00,
+    0xDAF2, 0x4B09, 0x781B, 0xB2DB, 0x001A, 0x2371, 0x4013, 0xD003, 0x230E, 0x18FB,
+    0x2201, 0x801A, 0x230E, 0x18FB, 0x881B, 0x0018, 0x46BD, 0xB004, 0xBD80, 0x46C0,
+    0x0000, 0x4002
 #endif
 };
 #endif
@@ -209,7 +209,7 @@ void DTek_TestFlashDriver(void)
     g_pFlashDriverAPIRAM->pfFLASH_DRV_VerifySection    = (tpfFLASH_DRV_VerifySection)   ((uint32_t)g_flashDriverRAM + (uint32_t)(g_pFlashDriverAPIRAM->pfFLASH_DRV_VerifySection));
     g_pFlashDriverAPIRAM->pfFLASH_DRV_GetDefaultConfig = (tpfFLASH_DRV_GetDefaultConfig)((uint32_t)g_flashDriverRAM + (uint32_t)(g_pFlashDriverAPIRAM->pfFLASH_DRV_GetDefaultConfig));
 
-    g_pFlashDriverAPIRAM->pfFLASH_DRV_GetDefaultConfig((flash_user_config_t * const)&FlashUserConfig);
+    g_pFlashDriverAPIRAM->pfFLASH_DRV_GetDefaultConfig((flash_user_config_t *const)&FlashUserConfig);
 #endif
 
     MSCM->OCMDR[0u] |= MSCM_OCMDR_OCM1(0x3u);
@@ -217,30 +217,33 @@ void DTek_TestFlashDriver(void)
 
     INT_SYS_DisableIRQGlobal();
 
-    result = FLASH_DRV_Init((flash_user_config_t * const)&FlashUserConfig, (flash_ssd_config_t * const)&SSDFlashConfig);
-    if(STATUS_SUCCESS == result)
-    {
+    result = FLASH_DRV_Init((flash_user_config_t *const)&FlashUserConfig, (flash_ssd_config_t *const)&SSDFlashConfig);
+
+    if (STATUS_SUCCESS == result) {
         result = g_pFlashDriverAPIRAM->pfFLASH_DRV_EraseSector(&SSDFlashConfig, destAddr, size);
-    } else errorCnt++;
+    } else {
+        errorCnt++;
+    }
 
-    if(STATUS_SUCCESS == result)
-    {
+    if (STATUS_SUCCESS == result) {
         result = g_pFlashDriverAPIRAM->pfFLASH_DRV_VerifySection(&SSDFlashConfig, destAddr, size / FTFx_DPHRASE_SIZE, 1);
-    } else errorCnt++;
+    } else {
+        errorCnt++;
+    }
 
-    if(STATUS_SUCCESS == result)
-    {
-        while((0u != size) && (STATUS_SUCCESS == result))
-        {
+    if (STATUS_SUCCESS == result) {
+        while ((0u != size) && (STATUS_SUCCESS == result)) {
             result = g_pFlashDriverAPIRAM->pfFLASH_DRV_Program(&SSDFlashConfig, destAddr, 8u, aDataBuf);
             size -= 8u;
             destAddr += 8u;
         }
-    } else errorCnt++;
+    } else {
+        errorCnt++;
+    }
 
     INT_SYS_EnableIRQGlobal();
 
-    for(;;) {
+    for (;;) {
         ;
     }
 }
@@ -259,8 +262,7 @@ void DTek_TestFlashDriver(void)
     uint32_t size = FEATURE_FLS_PF_BLOCK_SECTOR_SIZE;
     uint8_t sourceBuffer[BUFFER_SIZE];
 
-    for (uint32_t i = 0u; i < BUFFER_SIZE; i++)
-    {
+    for (uint32_t i = 0u; i < BUFFER_SIZE; i++) {
         sourceBuffer[i] = i;
     }
 
@@ -285,32 +287,38 @@ void DTek_TestFlashDriver(void)
 
     INT_SYS_DisableIRQGlobal();
 
-    result = FLASH_DRV_Init((flash_user_config_t * const)&FlashUserConfig, (flash_ssd_config_t * const)&SSDFlashConfig);
-    if(STATUS_SUCCESS == result)
-    {
+    result = FLASH_DRV_Init((flash_user_config_t *const)&FlashUserConfig, (flash_ssd_config_t *const)&SSDFlashConfig);
+
+    if (STATUS_SUCCESS == result) {
         result = g_pFlashDriverAPIRAM->pfFLASH_DRV_EraseSector(&SSDFlashConfig, destAddr, size);
-    } else errorCnt++;
+    } else {
+        errorCnt++;
+    }
 
 
-    if(STATUS_SUCCESS == result)
-    {
+    if (STATUS_SUCCESS == result) {
         /* Verify the erase operation at margin level value of 1, user read */
         result = g_pFlashDriverAPIRAM->pfFLASH_DRV_VerifySection(&SSDFlashConfig, destAddr, size / FTFx_DPHRASE_SIZE, 1u);
-    } else errorCnt++;
+    } else {
+        errorCnt++;
+    }
 
     size = BUFFER_SIZE;
-    if(STATUS_SUCCESS == result)
-    {
+
+    if (STATUS_SUCCESS == result) {
         /* Write some data to the erased PFlash sector */
         result = g_pFlashDriverAPIRAM->pfFLASH_DRV_Program(&SSDFlashConfig, destAddr, size, sourceBuffer);
-    } else errorCnt++;
+    } else {
+        errorCnt++;
+    }
 
 
-    if(STATUS_SUCCESS == result)
-    {
+    if (STATUS_SUCCESS == result) {
         /* Verify the program operation at margin level value of 1, user margin */
         result = g_pFlashDriverAPIRAM->pfFLASH_DRV_ProgramCheck(&SSDFlashConfig, destAddr, size, sourceBuffer, &failAddr, 1u);
-    } else errorCnt++;
+    } else {
+        errorCnt++;
+    }
 
     INT_SYS_EnableIRQGlobal();
 
@@ -318,36 +326,42 @@ void DTek_TestFlashDriver(void)
 
     destAddr = SSDFlashConfig.DFlashBase;
     size = FEATURE_FLS_DF_BLOCK_SECTOR_SIZE;
-    if(STATUS_SUCCESS == result)
-    {
+
+    if (STATUS_SUCCESS == result) {
         /* Erase a sector in DFlash */
         result = g_pFlashDriverAPIRAM->pfFLASH_DRV_EraseSector(&SSDFlashConfig, destAddr, size);
-    } else errorCnt++;
+    } else {
+        errorCnt++;
+    }
 
-    if(STATUS_SUCCESS == result)
-    {
+    if (STATUS_SUCCESS == result) {
         /* Verify the erase operation at margin level value of 1, user read */
         result = g_pFlashDriverAPIRAM->pfFLASH_DRV_VerifySection(&SSDFlashConfig, destAddr, size / FTFx_PHRASE_SIZE, 1u);
-    } else errorCnt++;
+    } else {
+        errorCnt++;
+    }
 
 
     destAddr = SSDFlashConfig.DFlashBase;
     size = BUFFER_SIZE;
-    if(STATUS_SUCCESS == result)
-    {
+
+    if (STATUS_SUCCESS == result) {
         /* Write some data to the erased DFlash sector */
         result = g_pFlashDriverAPIRAM->pfFLASH_DRV_Program(&SSDFlashConfig, destAddr, size, sourceBuffer);
-    } else errorCnt++;
+    } else {
+        errorCnt++;
+    }
 
-    if(STATUS_SUCCESS == result)
-    {
+    if (STATUS_SUCCESS == result) {
         /* Verify the program operation at margin level value of 1, user margin */
         result = g_pFlashDriverAPIRAM->pfFLASH_DRV_ProgramCheck(&SSDFlashConfig, destAddr, size, sourceBuffer, &failAddr, 1u);
-    } else errorCnt++;
+    } else {
+        errorCnt++;
+    }
 
 #endif /* FEATURE_FLS_HAS_FLEX_NVM */
 
-    for(;;) {
+    for (;;) {
         ;
     }
 }
