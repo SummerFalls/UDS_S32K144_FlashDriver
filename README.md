@@ -18,9 +18,16 @@
 
 ## :book: 简介
 
-S32K1xx 的 CAN 接 `周立功 USBCANFD-100U-mini`，使用 `ZCANPRO` 软件的 `ECU刷新` 功能进行测试。通过相应的 UDS 服务将本 `Flash Driver` 的 hex 文件下载至 :package: [UDS_S32K144_Bootloader](https://github.com/SummerFalls/UDS_S32K144_Bootloader) 在链接文件中为其预先指定起始地址的 RAM 空间中，并通过 `Flash Driver` 内实际包含的相应的 Flash 驱动函数的相对偏移量以及驱动函数本身来计算相应驱动函数的入口点在 RAM 内的偏移地址后，再通过函数指针的方式进行调用。
+S32K1xx 的 CAN 接 `周立功 USBCANFD-100U-mini`，使用 `ZCANPRO` 软件的 `ECU刷新` 功能进行测试。通过相应的 UDS 服务将本 `Flash Driver` 的 hex 文件下载至 :package: [UDS_S32K144_Bootloader][UDS_S32K144_Bootloader] 在链接文件中为其预先指定起始地址的 RAM 空间中，并通过 `Flash Driver` 内实际包含的相应的 Flash 驱动函数的相对偏移量以及驱动函数本身来计算相应驱动函数的入口点在 RAM 内的偏移地址后，再通过函数指针的方式进行调用。
 
 ![Pic_ZCANPRO_ECU_Refresh][Pic_ZCANPRO_ECU_Refresh]
+
+## :link: 关联工程
+
+- :package: [UDS_SecurityAccess][UDS_SecurityAccess]
+- :package: [UDS_S32K144_Bootloader][UDS_S32K144_Bootloader]
+- :package: [UDS_S32K144_FlashDriver][UDS_S32K144_FlashDriver]
+- :package: [UDS_S32K144_APP][UDS_S32K144_APP]
 
 ## :gear: 硬件 & 软件 需求
 
@@ -999,3 +1006,8 @@ Resulting sub-function parameter byte value (bit 7 ~ 0)
 [Pic_ZCANPRO_ECU_Refresh]: ./Pic_ZCANPRO_ECU_Refresh.png
 [UDS_OSI_Model]: ./Pic_UDS_OSI.png
 [UDS_PCI_Frame]: ./Pic_UDS_PCI_Frame.png
+
+[UDS_SecurityAccess]: https://github.com/SummerFalls/UDS_SecurityAccess
+[UDS_S32K144_Bootloader]: https://github.com/SummerFalls/UDS_S32K144_Bootloader
+[UDS_S32K144_FlashDriver]: https://github.com/SummerFalls/UDS_S32K144_FlashDriver
+[UDS_S32K144_APP]: https://github.com/SummerFalls/UDS_S32K144_APP
