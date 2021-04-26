@@ -72,7 +72,7 @@
 
 #ifdef EN_FLASH_DRIVER_DEBUG
 START_FUNCTION_DECLARATION_RAMSECTION
-static status_t FLASH_DRV_CommandSequence(const flash_ssd_config_t * pSSDConfig)
+static status_t FLASH_DRV_CommandSequence(const flash_ssd_config_t *pSSDConfig)
 END_FUNCTION_DECLARATION_RAMSECTION
 #else
 #define FLASH_DRV_CommandSequence(pSSDConfig, pRet)\
@@ -106,7 +106,7 @@ do{\
 #endif
 
 #ifdef EN_FLASH_DRIVER_DEBUG
-static status_t FLASH_DRV_ProgramCheckExecute(const flash_ssd_config_t * pSSDConfig,
+static status_t FLASH_DRV_ProgramCheckExecute(const flash_ssd_config_t *pSSDConfig,
                                               uint32_t dest,
                                               uint32_t size,
                                               const uint8_t * pExpectedData,
@@ -307,7 +307,7 @@ status_t FLASH_DRV_Init(const flash_user_config_t * const pUserConf,
  *END**************************************************************************/
 #ifdef EN_FLASH_DRIVER_DEBUG
 START_FUNCTION_DEFINITION_RAMSECTION
-static status_t FLASH_DRV_CommandSequence(const flash_ssd_config_t * pSSDConfig)
+static status_t FLASH_DRV_CommandSequence(const flash_ssd_config_t *pSSDConfig)
 {
     status_t ret = STATUS_SUCCESS;    /* Return code variable */
 
@@ -1095,7 +1095,7 @@ status_t FLASH_DRV_ProgramCheck(const flash_ssd_config_t * pSSDConfig,
     else
     {
 #ifdef EN_FLASH_DRIVER_DEBUG
-        ret = FLASH_DRV_ProgramCheckExecute(pSSDConfig,dest,size,pExpectedData,&failAddr,marginLevel);
+        ret = FLASH_DRV_ProgramCheckExecute(pSSDConfig, dest, size, pExpectedData, &failAddr, marginLevel);
         *pFailAddr = failAddr;
 #else
         uint32_t offsetAddr;            /* Offset address to convert to internal memory address */
@@ -1696,7 +1696,7 @@ static status_t FLASH_DRV_WaitEEWriteToFinish(const flash_ssd_config_t * pSSDCon
  * is not less than 16 bits.
  * 8-bit writing is invoked if destination is 8 bit aligned and size
  * is not less than 8 bits.
- * When EEPROM was set to EEPROM quick writes mode, the dest address 
+ * When EEPROM was set to EEPROM quick writes mode, the dest address
  * should be aligned 4 bytes,the size should be divided by 4.
  * Implements    : FLASH_DRV_EEEWrite_Activity
  *END**************************************************************************/
@@ -2245,7 +2245,7 @@ void FLASH_DRV_GetDefaultConfig(flash_user_config_t * const config)
 /*FUNCTION**********************************************************************
  *
  * Function Name : FLASH_DRV_ProgramCheckExecute
- * Description   : Internal function used by FLASH_DRV_ProgramCheck function to 
+ * Description   : Internal function used by FLASH_DRV_ProgramCheck function to
  * tests a previously programmed P-Flash or D-Flash long word
  * to see if it reads correctly at the specified margin level. This
  * API always returns STATUS_SUCCESS if size provided by user is zero
@@ -2253,7 +2253,7 @@ void FLASH_DRV_GetDefaultConfig(flash_user_config_t * const config)
  *
  *END**************************************************************************/
 #ifdef EN_FLASH_DRIVER_DEBUG
-static status_t FLASH_DRV_ProgramCheckExecute(const flash_ssd_config_t * pSSDConfig,
+static status_t FLASH_DRV_ProgramCheckExecute(const flash_ssd_config_t *pSSDConfig,
                                               uint32_t dest,
                                               uint32_t size,
                                               const uint8_t * pExpectedData,

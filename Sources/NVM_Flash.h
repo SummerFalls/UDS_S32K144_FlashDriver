@@ -26,7 +26,7 @@
 #include "flash_driver.h"
 #include "interrupt_manager.h"
 
-/* TODO S32K144_FlashDrv: #00 MCU 型号选择，影响生成的 Flash Driver 所包含的 API，与对应芯片型号的 Bootloader 工程对应 */
+/* TODO S32K_FlashDrv: #00 MCU 型号选择，影响生成的 Flash Driver 所包含的 API，与对应芯片型号的 Bootloader 工程对应 */
 //#define S32K116
 //#define S32K118
 //#define S32K142
@@ -54,7 +54,7 @@ typedef struct {
     tpfFLASH_DRV_Program pfFLASH_DRV_Program;                   /* program flash */
     tpfFLASH_DRV_VerifySection pfFLASH_DRV_VerifySection;       /* verify flash section */
     tpfFLASH_DRV_GetDefaultConfig pfFLASH_DRV_GetDefaultConfig; /* get default config */
-#elif defined (S32K144)
+#elif defined (S32K144) || defined (S32K118)
 //    tpfFLASH_DRV_EraseAllBlock pfFLASH_DRV_EraseAllBlock;
 //    tpfFLASH_DRV_VerifyAllBlock pfFLASH_DRV_VerifyAllBlock;
     tpfFLASH_DRV_EraseSector pfFLASH_DRV_EraseSector;

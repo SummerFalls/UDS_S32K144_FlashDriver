@@ -20,6 +20,7 @@
  * @ 历史: V1.0 2021年2月2日 Summary
  */
 
+#include "flash_driver.h"
 #include "NVM_Flash.h"
 
 /*
@@ -27,25 +28,34 @@
  * SDK: S32K1xx RTM SDK 3.0.0
  * IDE: S32 Design Studio for ARM 2.2
  *
- * TODO S32K144_FlashDrv: #01 在 C/C++ Build -> Settings -> Build Steps ->
+ * Modified Source Files:
+ * 1. NVM_Flash.h
+ * 2. NVM_Flash.c
+ * 3. flash_driver.h
+ * 4. flash_driver.c
+ * 5. S32K144_64_flash.ld
+ *
+ * 其中 flash_driver.c[h] 为 SDK 库文件，位于本工程内，为了导出为独立的 Flash API，对其进行了相应的修改，
+ * 将部分子函数修改为宏函数形式，去除多级调用的问题，即导出的 Flash API 函数需要纯粹的单级函数，当中不可有
+ * 多级函数调用。
+ *
+ * TODO S32K_FlashDrv: #01 在 C/C++ Build -> Settings -> Build Steps ->
  * Post-build steps -> Command 编辑框中粘贴以下命令，在编译后可自动以 <ProjName>Extracted.hex 的形式命名，
  * 在工程的根目录输出单独提取的 Flash Driver
  *
- * 例如 Flash Driver 加载到 Bootloader RAM 中的地址为 0x1FFF8010，则以下命令中的地址则为 0x1FFE8010，
- * objcopy 会给 0x1FFE + 1，尚不清楚原因，具体请以最终输出的 Hex 文件为准
+ * 例如 Flash Driver 加载到 Bootloader RAM 中的地址为 0x1FFF8000，则有以下命令：
+ * arm-none-eabi-objcopy.exe -O ihex --change-section-address .NVM_Driver=0x1FFF8000 -j .NVM_Driver "${BuildArtifactFileBaseName}.elf" "../${ProjName}Extracted.hex"
  *
- * arm-none-eabi-objcopy.exe -O ihex --change-addresses 0x1FFE8010 -j .NVM_Driver "${BuildArtifactFileBaseName}.elf" "../${ProjName}Extracted.hex"
+ * 注意：具体请以最终输出的 Hex 文件为准，可用 J-Flash 打开提取后的 Hex 文件进行检查。
  */
-
-//uint32_t *g_pFlashDriverRAMSection = (uint32_t *)0x20006FF0u;
 
 tFlashDriverAPIInfo *g_pFlashDriverAPIRAM = NULL;
 
-/* TODO S32K144_FlashDrv: #02 本偏移量需与 .ld 链接文件中的 m_NVM_Driver 起始地址保持一致 */
+/* TODO S32K_FlashDrv: #02 本偏移量需与 .ld 链接文件中的 m_NVM_Driver 起始地址保持一致 */
 #define FLASH_DRV_OFFSET    (0x10000u)
 #define CAL_OFFSET(funcPtr) ((uint32_t)(funcPtr) - FLASH_DRV_OFFSET)
 
-/* TODO S32K144_FlashDrv: #03 本偏移结构体内成员必须与对应芯片型号的 Bootloader 工程中 flash.h 文件的 tFlashOptInfo 结构体类型的 Flash API 成员一一对应并且数量相等 */
+/* TODO S32K_FlashDrv: #03 本偏移结构体内成员必须与对应芯片型号的 Bootloader 工程中 flash.h 文件的 tFlashOptInfo 结构体类型的 Flash API 成员一一对应并且数量相等 */
 #pragma GCC diagnostic ignored "-Wunused-const-variable="
 static const tFlashDriverAPIInfo gs_FlashDriverAPI NVM_DRIVER_SECTION = {
 #if defined (S32K116) || defined (S32K142)
@@ -53,7 +63,7 @@ static const tFlashDriverAPIInfo gs_FlashDriverAPI NVM_DRIVER_SECTION = {
     (tpfFLASH_DRV_Program)          CAL_OFFSET(FLASH_DRV_Program),
     (tpfFLASH_DRV_VerifySection)    CAL_OFFSET(FLASH_DRV_VerifySection),
     (tpfFLASH_DRV_GetDefaultConfig) CAL_OFFSET(FLASH_DRV_GetDefaultConfig),
-#elif defined (S32K144)
+#elif defined (S32K144) || defined (S32K118)
 //    (tpfFLASH_DRV_EraseAllBlock)    CAL_OFFSET(FLASH_DRV_EraseAllBlock),
 //    (tpfFLASH_DRV_VerifyAllBlock)   CAL_OFFSET(FLASH_DRV_VerifyAllBlock),
     (tpfFLASH_DRV_EraseSector)      CAL_OFFSET(FLASH_DRV_EraseSector),
@@ -69,7 +79,7 @@ static const tFlashDriverAPIInfo gs_FlashDriverAPI NVM_DRIVER_SECTION = {
 #endif
 };
 
-/* TODO S32K144_FlashDrv: #04 Flash 驱动函数表：包含前16（0x10）字节的指针映射偏移表以及相应的4个驱动函数
+/* TODO S32K_FlashDrv: #04 Flash 驱动函数表：包含前16（0x10）字节的指针映射偏移表以及相应的4个驱动函数
  * 编译后，通过 J-Flash 打开 Hex 文件提取对应地址处的内容，粘贴到以下数组即可测试
  */
 uint8_t g_flashDriverRAM[] = {
@@ -159,23 +169,6 @@ uint8_t g_flashDriverRAM[] = {
     0x00, 0x00, 0x02, 0x40, 0x0C, 0x00, 0x02, 0x40
 };
 
-#if 0 /* 此表用途未知，故预编译条件注释 */
-uint32_t g_codeRAMBackup[] = {
-#if 1
-    0xB084B580, 0x6078AF00, 0x18FB230E, 0x801A2200, 0x4B144914, 0xB2DB781B, 0x42522280, 0xB2DB4313, 0xE006700B, 0x699B687B,
-    0xD0023301, 0x699B687B, 0x4B0C4798, 0xB2DB781B, 0x2B00B25B, 0x4B09DAF2, 0xB2DB781B, 0x2371001A, 0xD0034013, 0x18FB230E,
-    0x801A2201, 0x18FB230E, 0x0018881B, 0xB00446BD, 0x46C0BD80, 0x40020000
-#else
-    0xB580, 0xB084, 0xAF00, 0x6078, 0x230E, 0x18FB, 0x2200, 0x801A, 0x4914, 0x4B14,
-    0x781B, 0xB2DB, 0x2280, 0x4252, 0x4313, 0xB2DB, 0x700B, 0xE006, 0x687B, 0x699B,
-    0x3301, 0xD002, 0x687B, 0x699B, 0x4798, 0x4B0C, 0x781B, 0xB2DB, 0xB25B, 0x2B00,
-    0xDAF2, 0x4B09, 0x781B, 0xB2DB, 0x001A, 0x2371, 0x4013, 0xD003, 0x230E, 0x18FB,
-    0x2201, 0x801A, 0x230E, 0x18FB, 0x881B, 0x0018, 0x46BD, 0xB004, 0xBD80, 0x46C0,
-    0x0000, 0x4002
-#endif
-};
-#endif
-
 /*******************************************************************************
 * @name   : DTek_TestFlashDriver
 * @brief  : 用于测试 Flash API
@@ -191,11 +184,11 @@ void DTek_TestFlashDriver(void)
     uint32_t destAddr = 0x18000u;
     uint8_t errorCnt = 0u;
 
-    /* TODO S32K144_FlashDrv: #05 注意不同MCU的Sector Size不同，需要进行相应调整，否则FLASH_DRV_EraseSector会执行失败 */
+    /* TODO S32K_FlashDrv: #05 注意不同MCU的Sector Size不同，需要进行相应调整，否则FLASH_DRV_EraseSector会执行失败 */
     uint32_t size = FEATURE_FLS_PF_BLOCK_SECTOR_SIZE;
     uint8_t aDataBuf[8] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
 
-#ifdef EN_FLASH_DRIVER_DEBUG /* TODO S32K144_FlashDrv: #06 This macro is in the header file: flash_driver.h */
+#ifdef EN_FLASH_DRIVER_DEBUG /* TODO S32K_FlashDrv: #06 This macro is in the header file: flash_driver.h */
     g_pFlashDriverAPIRAM = (tFlashDriverAPIInfo *)g_flashDriverRAM;
     g_pFlashDriverAPIRAM->pfFLASH_DRV_EraseSector      = FLASH_DRV_EraseSector;
     g_pFlashDriverAPIRAM->pfFLASH_DRV_Program          = FLASH_DRV_Program;
@@ -247,7 +240,7 @@ void DTek_TestFlashDriver(void)
         ;
     }
 }
-#elif defined (S32K144)
+#elif defined (S32K144) || defined (S32K118)
 #define BUFFER_SIZE         0x100u  /* Size of data source */
 void DTek_TestFlashDriver(void)
 {
@@ -258,7 +251,7 @@ void DTek_TestFlashDriver(void)
     uint8_t errorCnt = 0u;
     uint32_t failAddr;
 
-    /* TODO S32K144_FlashDrv: #05 注意不同MCU的Sector Size不同，需要进行相应调整，否则FLASH_DRV_EraseSector会执行失败 */
+    /* TODO S32K_FlashDrv: #05 注意不同MCU的Sector Size不同，需要进行相应调整，否则FLASH_DRV_EraseSector会执行失败 */
     uint32_t size = FEATURE_FLS_PF_BLOCK_SECTOR_SIZE;
     uint8_t sourceBuffer[BUFFER_SIZE];
 
@@ -266,7 +259,7 @@ void DTek_TestFlashDriver(void)
         sourceBuffer[i] = i;
     }
 
-#ifdef EN_FLASH_DRIVER_DEBUG /* TODO S32K144_FlashDrv: #06 This macro is in the header file: flash_driver.h */
+#ifdef EN_FLASH_DRIVER_DEBUG /* TODO S32K_FlashDrv: #06 This macro is in the header file: flash_driver.h */
     g_pFlashDriverAPIRAM = (tFlashDriverAPIInfo *)g_flashDriverRAM;
     g_pFlashDriverAPIRAM->pfFLASH_DRV_EraseSector      = FLASH_DRV_EraseSector;
     g_pFlashDriverAPIRAM->pfFLASH_DRV_VerifySection    = FLASH_DRV_VerifySection;

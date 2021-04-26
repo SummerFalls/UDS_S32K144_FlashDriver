@@ -53,11 +53,11 @@
 #include "status.h"
 #include "device_registers.h"
 
-/* TODO S32K144_FlashDrv: #07 调试 FLASH_DRIVER 宏定义 */
-/* TODO S32K144_FlashDrv: #08 若要导出Flash操作相关的函数作为 Flash Driver使用，则必须注释该宏后，再编译提取 */
+/* TODO S32K_FlashDrv: #07 调试 FLASH_DRIVER 宏定义 */
+/* TODO S32K_FlashDrv: #08 若要导出Flash操作相关的函数作为 Flash Driver使用，则必须注释该宏后，再编译提取 */
 //#define EN_FLASH_DRIVER_DEBUG
 
-/* TODO S32K144_FlashDrv: #09 在需要提取输出为 Flash Driver 的函数声明中（即本头文件内的 Flash 相关函数声明）加上本宏定义 */
+/* TODO S32K_FlashDrv: #09 在需要提取输出为 Flash Driver 的函数声明中（即本头文件内的 Flash 相关函数声明）加上本宏定义 */
 #define NVM_DRIVER_SECTION __attribute__((section (".NVM_Driver_Section")))
 /*!
  * @defgroup flash_driver Flash Memory (Flash)
