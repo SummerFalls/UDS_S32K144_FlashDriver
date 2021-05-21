@@ -57,32 +57,19 @@ tFlashDriverAPIInfo *g_pFlashDriverAPIRAM = NULL;
 
 /* TODO S32K_FlashDrv: #03 本偏移结构体内成员必须与对应芯片型号的 Bootloader 工程中 flash.h 文件的 tFlashOptInfo 结构体类型的 Flash API 成员一一对应并且数量相等 */
 #pragma GCC diagnostic ignored "-Wunused-const-variable="
-static const tFlashDriverAPIInfo gs_FlashDriverAPI NVM_DRIVER_SECTION = {
-#if defined (S32K116) || defined (S32K142)
-    (tpfFLASH_DRV_EraseSector)      CAL_OFFSET(FLASH_DRV_EraseSector),
-    (tpfFLASH_DRV_Program)          CAL_OFFSET(FLASH_DRV_Program),
-    (tpfFLASH_DRV_VerifySection)    CAL_OFFSET(FLASH_DRV_VerifySection),
-    (tpfFLASH_DRV_GetDefaultConfig) CAL_OFFSET(FLASH_DRV_GetDefaultConfig),
-#elif defined (S32K144) || defined (S32K118)
-//    (tpfFLASH_DRV_EraseAllBlock)    CAL_OFFSET(FLASH_DRV_EraseAllBlock),
-//    (tpfFLASH_DRV_VerifyAllBlock)   CAL_OFFSET(FLASH_DRV_VerifyAllBlock),
-    (tpfFLASH_DRV_EraseSector)      CAL_OFFSET(FLASH_DRV_EraseSector),
-    (tpfFLASH_DRV_VerifySection)    CAL_OFFSET(FLASH_DRV_VerifySection),
-//    (tpfFLASH_DRV_EraseSuspend)     CAL_OFFSET(FLASH_DRV_EraseSuspend),
-//    (tpfFLASH_DRV_EraseResume)      CAL_OFFSET(FLASH_DRV_EraseResume),
-    (tpfFLASH_DRV_Program)          CAL_OFFSET(FLASH_DRV_Program),
-    (tpfFLASH_DRV_ProgramCheck)     CAL_OFFSET(FLASH_DRV_ProgramCheck),
-//    (tpfFLASH_DRV_ProgramSection)   CAL_OFFSET(FLASH_DRV_ProgramSection),
-//    (tpfFLASH_DRV_EraseBlock)       CAL_OFFSET(FLASH_DRV_EraseBlock),
-//    (tpfFLASH_DRV_CommandSequence)  CAL_OFFSET(FLASH_DRV_CommandSequence),
-//    (tpfFLASH_DRV_VerifyBlock)      CAL_OFFSET(FLASH_DRV_VerifyBlock),
-#endif
+static const tFlashDriverAPIInfo gs_FlashDriverAPI NVM_DRIVER_SECTION =
+{
+    (tpfFLASH_DRV_EraseSector)   CAL_OFFSET(FLASH_DRV_EraseSector),
+    (tpfFLASH_DRV_VerifySection) CAL_OFFSET(FLASH_DRV_VerifySection),
+    (tpfFLASH_DRV_Program)       CAL_OFFSET(FLASH_DRV_Program),
+    (tpfFLASH_DRV_ProgramCheck)  CAL_OFFSET(FLASH_DRV_ProgramCheck),
 };
 
 /* TODO S32K_FlashDrv: #04 Flash 驱动函数表：包含前16（0x10）字节的指针映射偏移表以及相应的4个驱动函数
  * 编译后，通过 J-Flash 打开 Hex 文件提取对应地址处的内容，粘贴到以下数组即可测试
  */
-uint8_t g_flashDriverRAM[] = {
+uint8_t g_flashDriverRAM[] =
+{
     0x11, 0x00, 0x00, 0x00, 0x49, 0x01, 0x00, 0x00, 0x65, 0x02, 0x00, 0x00, 0xB1, 0x03, 0x00, 0x00,
     0x80, 0xB5, 0x88, 0xB0, 0x00, 0xAF, 0xF8, 0x60, 0xB9, 0x60, 0x7A, 0x60, 0x00, 0x23, 0x7B, 0x82,
     0x7B, 0x68, 0xBB, 0x61, 0xFB, 0x68, 0x9B, 0x68, 0x7B, 0x61, 0xBA, 0x68, 0x7B, 0x69, 0x9A, 0x42,
@@ -169,80 +156,14 @@ uint8_t g_flashDriverRAM[] = {
     0x00, 0x00, 0x02, 0x40, 0x0C, 0x00, 0x02, 0x40
 };
 
+#define BUFFER_SIZE 0x100u  /* Size of data source */
 /*******************************************************************************
-* @name   : DTek_TestFlashDriver
+* @name   : NVM_TestFlashDriver
 * @brief  : 用于测试 Flash API
 * @param  : void
 * @retval : void
 *******************************************************************************/
-#if defined (S32K116) || defined (S32K142)
-void DTek_TestFlashDriver(void)
-{
-    flash_user_config_t FlashUserConfig;
-    flash_ssd_config_t SSDFlashConfig;
-    status_t result = STATUS_SUCCESS;
-    uint32_t destAddr = 0x18000u;
-    uint8_t errorCnt = 0u;
-
-    /* TODO S32K_FlashDrv: #05 注意不同MCU的Sector Size不同，需要进行相应调整，否则FLASH_DRV_EraseSector会执行失败 */
-    uint32_t size = FEATURE_FLS_PF_BLOCK_SECTOR_SIZE;
-    uint8_t aDataBuf[8] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
-
-#ifdef EN_FLASH_DRIVER_DEBUG /* TODO S32K_FlashDrv: #06 This macro is in the header file: flash_driver.h */
-    g_pFlashDriverAPIRAM = (tFlashDriverAPIInfo *)g_flashDriverRAM;
-    g_pFlashDriverAPIRAM->pfFLASH_DRV_EraseSector      = FLASH_DRV_EraseSector;
-    g_pFlashDriverAPIRAM->pfFLASH_DRV_Program          = FLASH_DRV_Program;
-    g_pFlashDriverAPIRAM->pfFLASH_DRV_VerifySection    = FLASH_DRV_VerifySection;
-    g_pFlashDriverAPIRAM->pfFLASH_DRV_GetDefaultConfig = FLASH_DRV_GetDefaultConfig;
-    g_pFlashDriverAPIRAM->pfFLASH_DRV_GetDefaultConfig((flash_user_config_t *const )&FlashUserConfig);
-#else
-    g_pFlashDriverAPIRAM = (tFlashDriverAPIInfo *)g_flashDriverRAM;
-    g_pFlashDriverAPIRAM->pfFLASH_DRV_EraseSector      = (tpfFLASH_DRV_EraseSector)     ((uint32_t)g_flashDriverRAM + (uint32_t)(g_pFlashDriverAPIRAM->pfFLASH_DRV_EraseSector));
-    g_pFlashDriverAPIRAM->pfFLASH_DRV_Program          = (tpfFLASH_DRV_Program)         ((uint32_t)g_flashDriverRAM + (uint32_t)(g_pFlashDriverAPIRAM->pfFLASH_DRV_Program));
-    g_pFlashDriverAPIRAM->pfFLASH_DRV_VerifySection    = (tpfFLASH_DRV_VerifySection)   ((uint32_t)g_flashDriverRAM + (uint32_t)(g_pFlashDriverAPIRAM->pfFLASH_DRV_VerifySection));
-    g_pFlashDriverAPIRAM->pfFLASH_DRV_GetDefaultConfig = (tpfFLASH_DRV_GetDefaultConfig)((uint32_t)g_flashDriverRAM + (uint32_t)(g_pFlashDriverAPIRAM->pfFLASH_DRV_GetDefaultConfig));
-
-    g_pFlashDriverAPIRAM->pfFLASH_DRV_GetDefaultConfig((flash_user_config_t *const)&FlashUserConfig);
-#endif
-
-    MSCM->OCMDR[0u] |= MSCM_OCMDR_OCM1(0x3u);
-    MSCM->OCMDR[1u] |= MSCM_OCMDR_OCM1(0x3u);
-
-    INT_SYS_DisableIRQGlobal();
-
-    result = FLASH_DRV_Init((flash_user_config_t *const)&FlashUserConfig, (flash_ssd_config_t *const)&SSDFlashConfig);
-
-    if (STATUS_SUCCESS == result) {
-        result = g_pFlashDriverAPIRAM->pfFLASH_DRV_EraseSector(&SSDFlashConfig, destAddr, size);
-    } else {
-        errorCnt++;
-    }
-
-    if (STATUS_SUCCESS == result) {
-        result = g_pFlashDriverAPIRAM->pfFLASH_DRV_VerifySection(&SSDFlashConfig, destAddr, size / FTFx_DPHRASE_SIZE, 1);
-    } else {
-        errorCnt++;
-    }
-
-    if (STATUS_SUCCESS == result) {
-        while ((0u != size) && (STATUS_SUCCESS == result)) {
-            result = g_pFlashDriverAPIRAM->pfFLASH_DRV_Program(&SSDFlashConfig, destAddr, 8u, aDataBuf);
-            size -= 8u;
-            destAddr += 8u;
-        }
-    } else {
-        errorCnt++;
-    }
-
-    INT_SYS_EnableIRQGlobal();
-
-    for (;;) {
-        ;
-    }
-}
-#elif defined (S32K144) || defined (S32K118)
-#define BUFFER_SIZE         0x100u  /* Size of data source */
-void DTek_TestFlashDriver(void)
+void NVM_TestFlashDriver(void)
 {
     flash_user_config_t FlashUserConfig;
     flash_ssd_config_t SSDFlashConfig;
@@ -250,12 +171,12 @@ void DTek_TestFlashDriver(void)
     uint32_t destAddr = 20u * FEATURE_FLS_PF_BLOCK_SECTOR_SIZE; /* Erase the sixth PFlash sector */
     uint8_t errorCnt = 0u;
     uint32_t failAddr;
-
     /* TODO S32K_FlashDrv: #05 注意不同MCU的Sector Size不同，需要进行相应调整，否则FLASH_DRV_EraseSector会执行失败 */
     uint32_t size = FEATURE_FLS_PF_BLOCK_SECTOR_SIZE;
     uint8_t sourceBuffer[BUFFER_SIZE];
 
-    for (uint32_t i = 0u; i < BUFFER_SIZE; i++) {
+    for (uint32_t i = 0u; i < BUFFER_SIZE; i++)
+    {
         sourceBuffer[i] = i;
     }
 
@@ -273,8 +194,7 @@ void DTek_TestFlashDriver(void)
     g_pFlashDriverAPIRAM->pfFLASH_DRV_ProgramCheck     = (tpfFLASH_DRV_ProgramCheck)    ((uint32_t)g_flashDriverRAM + (uint32_t)(g_pFlashDriverAPIRAM->pfFLASH_DRV_ProgramCheck));
 #endif
 
-    FLASH_DRV_GetDefaultConfig((flash_user_config_t *const )&FlashUserConfig);
-
+    FLASH_DRV_GetDefaultConfig((flash_user_config_t *const)&FlashUserConfig);
     MSCM->OCMDR[0u] |= MSCM_OCMDR_OCM1(0x3u);
     MSCM->OCMDR[1u] |= MSCM_OCMDR_OCM1(0x3u);
 
@@ -282,34 +202,44 @@ void DTek_TestFlashDriver(void)
 
     result = FLASH_DRV_Init((flash_user_config_t *const)&FlashUserConfig, (flash_ssd_config_t *const)&SSDFlashConfig);
 
-    if (STATUS_SUCCESS == result) {
+    if (STATUS_SUCCESS == result)
+    {
         result = g_pFlashDriverAPIRAM->pfFLASH_DRV_EraseSector(&SSDFlashConfig, destAddr, size);
-    } else {
+    }
+    else
+    {
         errorCnt++;
     }
 
-
-    if (STATUS_SUCCESS == result) {
+    if (STATUS_SUCCESS == result)
+    {
         /* Verify the erase operation at margin level value of 1, user read */
         result = g_pFlashDriverAPIRAM->pfFLASH_DRV_VerifySection(&SSDFlashConfig, destAddr, size / FTFx_DPHRASE_SIZE, 1u);
-    } else {
+    }
+    else
+    {
         errorCnt++;
     }
 
     size = BUFFER_SIZE;
 
-    if (STATUS_SUCCESS == result) {
+    if (STATUS_SUCCESS == result)
+    {
         /* Write some data to the erased PFlash sector */
         result = g_pFlashDriverAPIRAM->pfFLASH_DRV_Program(&SSDFlashConfig, destAddr, size, sourceBuffer);
-    } else {
+    }
+    else
+    {
         errorCnt++;
     }
 
-
-    if (STATUS_SUCCESS == result) {
+    if (STATUS_SUCCESS == result)
+    {
         /* Verify the program operation at margin level value of 1, user margin */
         result = g_pFlashDriverAPIRAM->pfFLASH_DRV_ProgramCheck(&SSDFlashConfig, destAddr, size, sourceBuffer, &failAddr, 1u);
-    } else {
+    }
+    else
+    {
         errorCnt++;
     }
 
@@ -320,44 +250,55 @@ void DTek_TestFlashDriver(void)
     destAddr = SSDFlashConfig.DFlashBase;
     size = FEATURE_FLS_DF_BLOCK_SECTOR_SIZE;
 
-    if (STATUS_SUCCESS == result) {
+    if (STATUS_SUCCESS == result)
+    {
         /* Erase a sector in DFlash */
         result = g_pFlashDriverAPIRAM->pfFLASH_DRV_EraseSector(&SSDFlashConfig, destAddr, size);
-    } else {
+    }
+    else
+    {
         errorCnt++;
     }
 
-    if (STATUS_SUCCESS == result) {
+    if (STATUS_SUCCESS == result)
+    {
         /* Verify the erase operation at margin level value of 1, user read */
         result = g_pFlashDriverAPIRAM->pfFLASH_DRV_VerifySection(&SSDFlashConfig, destAddr, size / FTFx_PHRASE_SIZE, 1u);
-    } else {
+    }
+    else
+    {
         errorCnt++;
     }
-
 
     destAddr = SSDFlashConfig.DFlashBase;
     size = BUFFER_SIZE;
 
-    if (STATUS_SUCCESS == result) {
+    if (STATUS_SUCCESS == result)
+    {
         /* Write some data to the erased DFlash sector */
         result = g_pFlashDriverAPIRAM->pfFLASH_DRV_Program(&SSDFlashConfig, destAddr, size, sourceBuffer);
-    } else {
+    }
+    else
+    {
         errorCnt++;
     }
 
-    if (STATUS_SUCCESS == result) {
+    if (STATUS_SUCCESS == result)
+    {
         /* Verify the program operation at margin level value of 1, user margin */
         result = g_pFlashDriverAPIRAM->pfFLASH_DRV_ProgramCheck(&SSDFlashConfig, destAddr, size, sourceBuffer, &failAddr, 1u);
-    } else {
+    }
+    else
+    {
         errorCnt++;
     }
 
 #endif /* FEATURE_FLS_HAS_FLEX_NVM */
 
-    for (;;) {
+    for (;;)
+    {
         ;
     }
 }
-#endif
 
 /* -------------------------------------------- END OF FILE -------------------------------------------- */
